@@ -14,6 +14,10 @@ type PairsTally = [((String, String), Int)]
 
 -- DO NOT CHANGE THE TYPE SIGNATURES FOR THESE FUNCTIONS
 
+
+
+
+
 {-  wordCount document
     Makes a list of the amount of times each word appears in the
     document
@@ -56,7 +60,6 @@ getCount word list = (word, length [ x | x <- list, x == word])
 
 
 
-
 adjacentPairs :: Document -> Pairs
 adjacentPairs = undefined  -- remove "undefined" and write your function here
 
@@ -81,7 +84,7 @@ pairsCount = undefined  -- remove "undefined" and write your function here
         neighbours [(("bear","big"),2),(("big","dog"),1),(("bear","dog"),3)] "big" = [("bear",2),("dog",1)]
 -}
 neighbours :: PairsTally -> String -> WordTally
-neighbours list word = [ (pairWord, num) | ((firstWord, secondWord), num) <- getPairsWithWord list word, 
+neighbours list word = [ (pairWord, num) | ((firstWord, secondWord), num) <- getPairsWithWord list word,
                                             let pairWord = if firstWord == word then secondWord else firstWord]
 
 {-  getPairsWithWord list word
@@ -97,9 +100,29 @@ getPairsWithWord list word = [ ((firstWord, secondWord), num) | ((firstWord, sec
 
 
 
-
 mostCommonNeighbour :: PairsTally -> String -> Maybe String
-mostCommonNeighbour = undefined  -- remove "undefined" and write your function here
+mostCommonNeighbour list word =
+    let neighbouringWords = neighbours list word in
+        if not (null (getMostCommonWord (head neighbouringWords) neighbouringWords))
+            then Just (fst (getMostCommonWord (head neighbouringWords) neighbouringWords))
+            else Nothing 
+
+{-  getMostCommonWord (head list) list
+    get the word with the highest count in a WordTally
+    RETURNS: The tuple with the highest count in the list (or tied for highest)
+    EXAMPLES:
+        getMostCommonWord ("bear",2) [("bear",2),("dog",1)] == ("bear",2)
+        getMostCommonWord ("bear",2) [("bear",2),("dog",1),("fish",2)] == ("fish",2)
+-}
+getMostCommonWord :: (String, Int) -> WordTally -> (String, Int)
+getMostCommonWord (word, count) list -- VARIANT: length list
+    | null list = (word, count)
+    | otherwise =
+        if count > snd (head list)
+            then getMostCommonWord (word, count) (tail list)
+            else getMostCommonWord (head list) (tail list)
+
+
 
 
 

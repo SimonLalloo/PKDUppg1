@@ -19,39 +19,41 @@ type PairsTally = [((String, String), Int)]
 
 
 {-  wordCount document
-    Makes a list of the amount of times each word appears in the
-    document
-    RETURNS: A list containing tuples with each word and the amount of
-    times it appears in document
+    Makes a list of the amount of times each word appears in the document
+    RETURNS: A list containing tuples with each word and the amount of times it appears in document
     EXAMPLES:
+        wordCount [["a", "rose", "is", "a", "rose"],["but", "so", "is", "a", "rose"]] == [("a",3),("rose",3),("is",2),("but",1),("so",1)]
+        wordCount [[]] == []
 -}
 wordCount :: Document -> WordTally
-wordCount doc =  wordCount' (makeOneSentence doc)
+wordCount doc =  getWordCount (makeOneSentence doc)
 
-{-  wordCount' sentence
+{-  getWordCount sentence
     Auxillary function to wordCount to get the amount of times each word appears in the sentence
-    RETURNS: A list containing tuples with each word and the amount of
-    times it appears in sentence
-    EXAMPLES:
+    RETURNS: A list containing tuples with each word and the amount of times it appears in sentence
+    EXAMPLES: 
+        getWordCount ["a", "rose", "is", "a", "rose", "but", "so", "is", "a", "rose"] == [("a",3),("rose",3),("is",2),("but",1),("so",1)]      
 -}
-wordCount' :: Sentence -> WordTally
-wordCount' list -- VARIANT: length list
+getWordCount :: Sentence -> WordTally
+getWordCount list -- VARIANT: length list
     | null list = []
-    | otherwise = let word = head list in getCount word list : wordCount' [ x | x <- list, x /= word]
+    | otherwise = let word = head list in getCount word list : getWordCount [ x | x <- list, x /= word]
 
 {-  makeOneSentence document
     Turns a document into a single sentence
     RETURNS: A sentence containing all strings in the document
     EXAMPLES:
+        makeOneSentence [["a", "b"], ["c", "d"]] == ["a","b","c","d"]
 -}
 makeOneSentence :: Document -> Sentence
 makeOneSentence doc = [y | x <- doc, y <- x]
 
 {-  getCount word sentence
     gets the wordTally for a specified word
-    RETURNS: A tuple with the specified word and the amount of times
-    it appears in the sentence
+    RETURNS: A tuple with the specified word and the amount of times it appears in the sentence
     EXAMPLES:
+        getCount "rose" ["a", "rose", "is", "a", "rose", "but", "so", "is", "a", "rose"] == ("rose",3)
+        getCount "test" ["a", "rose", "is", "a", "rose", "but", "so", "is", "a", "rose"] == ("test",0)
 -}
 getCount :: String -> Sentence -> (String, Int)
 getCount word list = (word, length [ x | x <- list, x == word])
@@ -77,7 +79,7 @@ pairsCount = undefined  -- remove "undefined" and write your function here
 
 
 {-  neighbours list inputWord
-    Returns the amount of times each word appears together with a specified word
+    Finds the amount of times each word appears together with a specified word
     RETURNS: A WordTally containing all words that appear together with inputWord and the amount of
     times they do so.
     EXAMPLES: 
@@ -88,7 +90,7 @@ neighbours list word = [ (pairWord, num) | ((firstWord, secondWord), num) <- get
                                             let pairWord = if firstWord == word then secondWord else firstWord]
 
 {-  getPairsWithWord list word
-    finds all pairTallies containing a specified word
+    Finds all pairTallies containing a specified word
     RETURNS: A PairsTally containing only the tallies that include word
     EXAMPLES: 
         getPairsWithWord [(("bear","big"),2),(("big","dog"),1),(("bear","dog"),3)] "big" == [(("bear","big"),2),(("big","dog"),1)]
@@ -101,7 +103,7 @@ getPairsWithWord list word = [ ((firstWord, secondWord), num) | ((firstWord, sec
 
 
 {-  mostCommonNeighbour PairsTally word
-    get the most common neighbour to a specified word
+    Finds the most common neighbour to a specified word
     RETURNS: The most common neighbour to word in PairsTally or Nothing
     EXAMPLES: 
         mostCommonNeighbour [(("bear","big"),2),(("big","dog"),1),(("bear","dog"),3)] "bear" == Just "dog"
@@ -115,8 +117,8 @@ mostCommonNeighbour list word =
             else Nothing 
 
 {-  getMostCommonWord (head list) (tail list)
-    get the word with the highest count in a WordTally
-    RETURNS: The tuple with the highest count in the list (or one of the tied for highest)
+    Finds the word with the highest tally in a WordTally
+    RETURNS: The tuple with the highest tally in the list (or one of the tied for highest)
     EXAMPLES:
         getMostCommonWord ("bear",2) [("bear",2),("dog",1)] == ("bear",2)
         getMostCommonWord ("bear",2) [("bear",2),("dog",1),("fish",2)] == ("fish",2)

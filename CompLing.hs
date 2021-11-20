@@ -100,16 +100,23 @@ getPairsWithWord list word = [ ((firstWord, secondWord), num) | ((firstWord, sec
 
 
 
+{-  mostCommonNeighbour PairsTally word
+    get the most common neighbour to a specified word
+    RETURNS: The most common neighbour to word in PairsTally or Nothing
+    EXAMPLES: 
+        mostCommonNeighbour [(("bear","big"),2),(("big","dog"),1),(("bear","dog"),3)] "bear" == Just "dog"
+        mostCommonNeighbour [(("bear","big"),2),(("big","dog"),1),(("bear","dog"),3)] "test" == Nothing
+-}
 mostCommonNeighbour :: PairsTally -> String -> Maybe String
 mostCommonNeighbour list word =
     let neighbouringWords = neighbours list word in
-        if not (null (getMostCommonWord (head neighbouringWords) neighbouringWords))
-            then Just (fst (getMostCommonWord (head neighbouringWords) neighbouringWords))
+        if not (null neighbouringWords)
+            then Just (fst (getMostCommonWord (head neighbouringWords) (tail neighbouringWords)))
             else Nothing 
 
-{-  getMostCommonWord (head list) list
+{-  getMostCommonWord (head list) (tail list)
     get the word with the highest count in a WordTally
-    RETURNS: The tuple with the highest count in the list (or tied for highest)
+    RETURNS: The tuple with the highest count in the list (or one of the tied for highest)
     EXAMPLES:
         getMostCommonWord ("bear",2) [("bear",2),("dog",1)] == ("bear",2)
         getMostCommonWord ("bear",2) [("bear",2),("dog",1),("fish",2)] == ("fish",2)

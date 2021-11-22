@@ -3,7 +3,6 @@ module CompLing(wordCount, adjacentPairs, pairsCount, neighbours, mostCommonNeig
 
 import Test.HUnit -- provides testing framework
 import PandP      -- provide sample text to play with (variable austin)
-import Distribution.Simple.Program.HcPkg (list)
 
 -- DO NOT CHANGE THESE TYPES
 type Sentence = [String]
@@ -61,52 +60,96 @@ makeOneSentence doc = [word | list <- doc, word <- list]
 getCount :: String -> Sentence -> (String, Int)
 getCount word list = (word, length [ x | x <- list, x == word])
 
-
-
-
-
+{-  adjacentPairs Document
+    creates a list of pairs from adjacent words in the document
+    RETURNS: A list of tuples made up out of the adjacent strings from the sentences in the document.
+    EXAMPLES:
+        adjacentPairs [["time", "for", "a", "break"], ["not", "for", "a", "while"]] 
+            == [("time","for"),("for","a"),("a","break"),("not","for"),("for","a"),("a","while")]
+-}
 adjacentPairs :: Document -> Pairs
+-- VARIANT: length document
 adjacentPairs [] = []
 adjacentPairs (x:xs) = zip x (tail x) ++ adjacentPairs xs
 
-
-
-
-
+{-  initialPairs Document
+    creates a list of pairs from the first two words in each sentence.
+    RETURNS: A list of tuples made up out of the first two strings from the sentences in the document.
+    EXAMPLES:
+        initialPairs [["time", "for", "a", "break"], ["not", "yet"]]
+            == [("time","for"),("not", "yet")]
+-}
 initialPairs :: Document -> Pairs
+-- VARIANT: length document
 initialPairs [] = []
 initialPairs (x:xs) = initialPairsAux x ++ initialPairs xs
 
+{-  initialPairsAux Sentence
+    Makes a tuple from the first two words in the sentence.
+    RETURNS: A tuple in a list made up out of the first two strings from the sentences in the document.
+    EXAMPLES:
+        initialPairsAux ["time", "for", "a", "break"]
+            == [("time","for")]
+-}
 initialPairsAux :: Sentence -> Pairs
 initialPairsAux [x] = []
 initialPairsAux (a:b:c) = [(a, b)]
 
-
-
-
-
+{-  finalPairs Document
+    creates a list of pairs from the last two words in each sentence.
+    RETURNS: A list of tuples made up out of the last two strings from the sentences in the document.
+    EXAMPLES:
+        finalPairs [["time", "for", "a", "break"], ["not", "yet"]]
+            == [("a","break"),("not", "yet")]
+-}
 finalPairs :: Document -> Pairs
+-- VARIANT: length document
 finalPairs [] = []
 finalPairs (x:xs) = finalPairsAux x ++ finalPairs xs
 
+{-  finalPairsAux Sentence
+    Makes a tuple from the last two words in the sentence.
+    RETURNS: A tuple in a list made up out of the last two strings from the sentences in the document.
+    EXAMPLES:
+        finalPairsAux ["time", "for", "a", "break"]
+            == [("a","break")]
+-}
 finalPairsAux :: Sentence -> Pairs
 finalPairsAux [x] = []
 finalPairsAux list = [(last (init list), last list)]
 
-
-
-
-
+{-  pairsCount Pairs
+    Makes a list containing how many times a tuple appears in a list.
+    RETURNS: A list of tuples containing each pair and the amount of times it appears in Pairs.
+    EXAMPLES:
+        pairsCount [("big","bear"),("bear","big"),("big","dog")]
+            == [(("big","bear"),2),(("big","dog"),1)]
+-}
 pairsCount :: Pairs -> PairsTally
+-- VARIANT: length list
 pairsCount list
     | null list = []
     | otherwise =
         getPairTally pair list ++ pairsCount (makeNewList pair list)
         where pair = head list
 
+{-  getPairTally pair listOfPairs
+    Calculates how many times the pair appears in the list regardless of order of elements in pair.
+    RETURNS: A list containing a tuple containing the pair and the amount of times it appears in listOfPairs regardless of order of elements in pair.
+    EXAMPLES:
+        getPairTally ("big", "bear") [("big", "bear"), ("bear", "big"), ("big", "dog")]
+            == [(("big","bear"),2)]
+-}
 getPairTally :: (String, String) -> Pairs -> PairsTally
 getPairTally pair list = [(pair, length [ (a,b) | (a,b) <- list, (a,b) == pair || (b,a) == pair] )]
 
+{-  makeNewList pair listOfPairs
+    Makes a new list of pairs without the specified pair regardless of order of elements in pair.
+    RETURNS: A list with all pairs in listOfPairs except pair regardless of order of elements in pair.
+    EXAMPLES:
+        getPairTally ("big", "bear") [("big", "bear"), ("bear", "big"), ("big", "dog")]
+            == [(("big","bear"),2)]
+-}
 makeNewList :: (String, String) -> Pairs -> Pairs
 makeNewList pair list = [ (a, b) | (a,b) <- list, not ((a,b) == pair || (b,a) == pair) ]
 

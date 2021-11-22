@@ -3,7 +3,6 @@ module CompLing(wordCount, adjacentPairs, pairsCount, neighbours, mostCommonNeig
 
 import Test.HUnit -- provides testing framework
 import PandP      -- provide sample text to play with (variable austin)
-import Distribution.Simple.Program.HcPkg (list)
 
 -- DO NOT CHANGE THESE TYPES
 type Sentence = [String]
@@ -102,7 +101,7 @@ pairsCount list
     | null list = []
     | otherwise =
         getPairTally pair list ++ pairsCount (makeNewList pair list)
-        where pair = head list
+            where pair = head list
 
 getPairTally :: (String, String) -> Pairs -> PairsTally
 getPairTally pair list = [(pair, length [ (a,b) | (a,b) <- list, (a,b) == pair || (b,a) == pair] )]
@@ -151,7 +150,7 @@ mostCommonNeighbour list word =
             then Just (fst (getMostCommonWord (head neighbouringWords) (tail neighbouringWords)))
             else Nothing 
 
-{-  getMostCommonWord (head list) (tail list)
+{-  getMostCommonWord (word, count) list
     Finds the word with the highest tally in a WordTally
     RETURNS: The tuple with the highest tally in the list (or one of the tied for highest)
     EXAMPLES:

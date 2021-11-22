@@ -3,7 +3,6 @@ module CompLing(wordCount, adjacentPairs, pairsCount, neighbours, mostCommonNeig
 
 import Test.HUnit -- provides testing framework
 import PandP      -- provide sample text to play with (variable austin)
-import Text.XHtml.Strict (docType)
 
 -- DO NOT CHANGE THESE TYPES
 type Sentence = [String]
@@ -49,7 +48,7 @@ getWordCount list
         makeOneSentence [["a", "b"], ["c", "d"]] == ["a","b","c","d"]
 -}
 makeOneSentence :: Document -> Sentence
-makeOneSentence doc = [y | x <- doc, y <- x]
+makeOneSentence doc = [word | list <- doc, word <- list]
 
 {-  getCount word sentence
     gets the wordTally for a specified word
@@ -66,13 +65,36 @@ getCount word list = (word, length [ x | x <- list, x == word])
 
 
 adjacentPairs :: Document -> Pairs
-adjacentPairs = undefined  -- remove "undefined" and write your function here
+adjacentPairs [] = []
+adjacentPairs (x:xs) = zip x (tail x) ++ adjacentPairs xs
+
+
+
+
 
 initialPairs :: Document -> Pairs
-initialPairs = undefined  -- remove "undefined" and write your function here
+initialPairs [] = []
+initialPairs (x:xs) = initialPairsAux x ++ initialPairs xs
+
+initialPairsAux :: Sentence -> Pairs
+initialPairsAux [x] = []
+initialPairsAux (a:b:c) = [(a, b)]
+
+
+
+
 
 finalPairs :: Document -> Pairs
-finalPairs = undefined  -- remove "undefined" and write your function here
+finalPairs [] = []
+finalPairs (x:xs) = finalPairsAux x ++ finalPairs xs
+
+finalPairsAux :: Sentence -> Pairs
+finalPairsAux [x] = []
+finalPairsAux list = [(last (init list), last list)]
+
+
+
+
 
 pairsCount :: Pairs -> PairsTally
 pairsCount = undefined  -- remove "undefined" and write your function here

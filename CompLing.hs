@@ -3,6 +3,7 @@ module CompLing(wordCount, adjacentPairs, pairsCount, neighbours, mostCommonNeig
 
 import Test.HUnit -- provides testing framework
 import PandP      -- provide sample text to play with (variable austin)
+import Distribution.Simple.Program.HcPkg (list)
 
 -- DO NOT CHANGE THESE TYPES
 type Sentence = [String]
@@ -97,7 +98,17 @@ finalPairsAux list = [(last (init list), last list)]
 
 
 pairsCount :: Pairs -> PairsTally
-pairsCount = undefined  -- remove "undefined" and write your function here
+pairsCount list
+    | null list = []
+    | otherwise =
+        getPairTally pair list ++ pairsCount (makeNewList pair list)
+        where pair = head list
+
+getPairTally :: (String, String) -> Pairs -> PairsTally
+getPairTally pair list = [(pair, length [ (a,b) | (a,b) <- list, (a,b) == pair || (b,a) == pair] )]
+
+makeNewList :: (String, String) -> Pairs -> Pairs
+makeNewList pair list = [ (a, b) | (a,b) <- list, not ((a,b) == pair || (b,a) == pair) ]
 
 
 

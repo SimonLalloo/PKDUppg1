@@ -25,7 +25,7 @@ type PairsTally = [((String, String), Int)]
         wordCount [[]] == []
 -}
 wordCount :: Document -> WordTally
-wordCount doc =  getWordCount (makeOneSentence doc)
+wordCount doc =  getWordCount (concat doc)
 
 {-  getWordCount sentence
     Auxillary function to wordCount to get the amount of times each word appears in the sentence
@@ -41,15 +41,6 @@ getWordCount list
         let word = head list 
         in getCount word list : getWordCount [ x | x <- list, x /= word]
 
-{-  makeOneSentence document
-    Turns a document into a single sentence
-    RETURNS: A sentence containing all strings in the document
-    EXAMPLES:
-        makeOneSentence [["a", "b"], ["c", "d"]] == ["a","b","c","d"]
--}
-makeOneSentence :: Document -> Sentence
-makeOneSentence doc = [word | list <- doc, word <- list]
-
 {-  getCount word sentence
     gets the wordTally for a specified word
     RETURNS: A tuple with the specified word and the amount of times it appears in the sentence
@@ -59,6 +50,10 @@ makeOneSentence doc = [word | list <- doc, word <- list]
 -}
 getCount :: String -> Sentence -> (String, Int)
 getCount word list = (word, length [ x | x <- list, x == word])
+
+
+
+
 
 {-  adjacentPairs Document
     creates a list of pairs from adjacent words in the document
@@ -72,8 +67,13 @@ adjacentPairs :: Document -> Pairs
 adjacentPairs [] = []
 adjacentPairs (x:xs) = zip x (tail x) ++ adjacentPairs xs
 
+
+
+
+
 {-  initialPairs Document
     creates a list of pairs from the first two words in each sentence.
+    PRE: All sentences in document contain at least one word
     RETURNS: A list of tuples made up out of the first two strings from the sentences in the document.
     EXAMPLES:
         initialPairs [["time", "for", "a", "break"], ["not", "yet"]]
@@ -86,6 +86,7 @@ initialPairs (x:xs) = initialPairsAux x ++ initialPairs xs
 
 {-  initialPairsAux Sentence
     Makes a tuple from the first two words in the sentence.
+    PRE: Sentence is not empty
     RETURNS: A tuple in a list made up out of the first two strings from the sentences in the document.
     EXAMPLES:
         initialPairsAux ["time", "for", "a", "break"]
@@ -95,8 +96,13 @@ initialPairsAux :: Sentence -> Pairs
 initialPairsAux [x] = []
 initialPairsAux (a:b:c) = [(a, b)]
 
+
+
+
+
 {-  finalPairs Document
     creates a list of pairs from the last two words in each sentence.
+    PRE: All sentences in document contain at least one word
     RETURNS: A list of tuples made up out of the last two strings from the sentences in the document.
     EXAMPLES:
         finalPairs [["time", "for", "a", "break"], ["not", "yet"]]
@@ -109,6 +115,7 @@ finalPairs (x:xs) = finalPairsAux x ++ finalPairs xs
 
 {-  finalPairsAux Sentence
     Makes a tuple from the last two words in the sentence.
+    PRE: Sentence contains at least one word
     RETURNS: A tuple in a list made up out of the last two strings from the sentences in the document.
     EXAMPLES:
         finalPairsAux ["time", "for", "a", "break"]
@@ -117,6 +124,10 @@ finalPairs (x:xs) = finalPairsAux x ++ finalPairs xs
 finalPairsAux :: Sentence -> Pairs
 finalPairsAux [x] = []
 finalPairsAux list = [(last (init list), last list)]
+
+
+
+
 
 {-  pairsCount Pairs
     Makes a list containing how many times a tuple appears in a list.

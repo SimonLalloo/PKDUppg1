@@ -21,7 +21,8 @@ type PairsTally = [((String, String), Int)]
     Makes a list of the amount of times each word appears in the document.
     RETURNS: A list of tuples containing each word and the amount of times it appears in document.
     EXAMPLES:
-        wordCount [["a", "rose", "is", "a", "rose"],["but", "so", "is", "a", "rose"]] == [("a",3),("rose",3),("is",2),("but",1),("so",1)]
+        wordCount [["a", "rose", "is", "a", "rose"],["but", "so", "is", "a", "rose"]] 
+            == [("a",3),("rose",3),("is",2),("but",1),("so",1)]
         wordCount [[]] == []
 -}
 wordCount :: Document -> WordTally
@@ -31,7 +32,9 @@ wordCount doc =  wordCountAux (concat doc)
     Auxillary function to wordCount to get the amount of times each word appears in the sentence.
     RETURNS: A list of tuples containing each word and the amount of times it appears in sentence.
     EXAMPLES: 
-        wordCountAux ["a", "rose", "is", "a", "rose", "but", "so", "is", "a", "rose"] == [("a",3),("rose",3),("is",2),("but",1),("so",1)]      
+        wordCountAux ["a", "rose", "is", "a", "rose", "but", "so", "is", "a", "rose"] 
+            == [("a",3),("rose",3),("is",2),("but",1),("so",1)]   
+        wordCountAux [] == [] 
 -}
 wordCountAux :: Sentence -> WordTally
 -- VARIANT: length list
@@ -63,6 +66,7 @@ getCount word list = (word, length [ x | x <- list, x == word])
     EXAMPLES:
         adjacentPairs [["time", "for", "a", "break"], ["not", "for", "a", "while"]] 
             == [("time","for"),("for","a"),("a","break"),("not","for"),("for","a"),("a","while")]
+        adjacentPairs [[], ["a"]] == []
 -}
 adjacentPairs :: Document -> Pairs
 -- VARIANT: length document
@@ -80,6 +84,7 @@ adjacentPairs (x:xs) = zip x (tail x) ++ adjacentPairs xs
     EXAMPLES:
         initialPairs [["time", "for", "a", "break"], ["not", "yet"]]
             == [("time","for"),("not", "yet")]
+        initialPairs [["a"]] == []
 -}
 initialPairs :: Document -> Pairs
 -- VARIANT: length document
@@ -93,6 +98,7 @@ initialPairs (x:xs) = initialPairsAux x ++ initialPairs xs
     EXAMPLES:
         initialPairsAux ["time", "for", "a", "break"]
             == [("time","for")]
+        initialPairsAux ["a"] == []
 -}
 initialPairsAux :: Sentence -> Pairs
 initialPairsAux [x] = []
@@ -122,6 +128,7 @@ finalPairs (x:xs) = finalPairsAux x ++ finalPairs xs
     EXAMPLES:
         finalPairsAux ["time", "for", "a", "break"]
             == [("a","break")]
+        finalPairsAux ["a"] == []
 -}
 finalPairsAux :: Sentence -> Pairs
 finalPairsAux [x] = []
@@ -137,6 +144,7 @@ finalPairsAux list = [(last (init list), last list)]
     EXAMPLES:
         pairsCount [("big","bear"),("bear","big"),("big","dog")]
             == [(("big","bear"),2),(("big","dog"),1)]
+        pairsCount [] == []
 -}
 pairsCount :: Pairs -> PairsTally
 -- VARIANT: length list
@@ -154,6 +162,7 @@ pairsCount list
     EXAMPLES:
         getPairTally ("big", "bear") [("big", "bear"), ("bear", "big"), ("big", "dog")]
             == [(("big","bear"),2)]
+        getPairTally ("a", "b") [] == [(("a","b"),0)]
 -}
 getPairTally :: (String, String) -> Pairs -> PairsTally
 getPairTally pair list = [(pair, length [ (a,b) | (a,b) <- list, (a,b) == pair || (b,a) == pair] )]
@@ -162,8 +171,10 @@ getPairTally pair list = [(pair, length [ (a,b) | (a,b) <- list, (a,b) == pair |
     Removes all instances of a specified pair from a list, regardless of order of elements in the pair.
     RETURNS: A list of all tuples in listOfPairs except except those containing the same elements as pair.
     EXAMPLES:
-        getPairTally ("big", "bear") [("big", "bear"), ("bear", "big"), ("big", "dog")]
-            == [(("big","bear"),2)]
+        makeNewList ("big", "bear") [("big", "bear"), ("bear", "big"), ("big", "dog")] 
+            == [("big","dog")]
+        makeNewList ("big", "fish") [("big", "bear"), ("bear", "big"), ("big", "dog")] 
+            == [("big","bear"),("bear","big"),("big","dog")]      
 -}
 makeNewList :: (String, String) -> Pairs -> Pairs
 makeNewList pair list = [ (a, b) | (a,b) <- list, not ((a,b) == pair || (b,a) == pair) ]
@@ -176,7 +187,10 @@ makeNewList pair list = [ (a, b) | (a,b) <- list, not ((a,b) == pair || (b,a) ==
     Finds the amount of times each word appears together with a specified word.
     RETURNS: A list containing all words that appear next to inputWord and the amount of times they do so.
     EXAMPLES: 
-        neighbours [(("bear","big"),2),(("big","dog"),1),(("bear","dog"),3)] "big" = [("bear",2),("dog",1)]
+        neighbours [(("bear","big"),2),(("big","dog"),1),(("bear","dog"),3)] "big"
+            == [("bear",2),("dog",1)]
+        neighbours [(("bear","big"),2),(("big","dog"),1),(("bear","dog"),3)] "fish"
+            == []        
 -}
 neighbours :: PairsTally -> String -> WordTally
 neighbours list word = [ (pairWord, num) | ((firstWord, secondWord), num) <- getPairsWithWord list word,
@@ -187,7 +201,10 @@ neighbours list word = [ (pairWord, num) | ((firstWord, secondWord), num) <- get
     Finds all pairTallies containing a specified word.
     RETURNS: A list containing only the tallies including word.
     EXAMPLES: 
-        getPairsWithWord [(("bear","big"),2),(("big","dog"),1),(("bear","dog"),3)] "big" == [(("bear","big"),2),(("big","dog"),1)]
+        getPairsWithWord [(("bear","big"),2),(("big","dog"),1),(("bear","dog"),3)] "big" 
+            == [(("bear","big"),2),(("big","dog"),1)]
+        getPairsWithWord [(("bear","big"),2),(("big","dog"),1),(("bear","dog"),3)] "fish"
+            == []
 -}
 getPairsWithWord :: PairsTally -> String -> PairsTally
 getPairsWithWord list word = [ ((firstWord, secondWord), num) | ((firstWord, secondWord), num) <- list, firstWord == word || secondWord == word]
@@ -218,6 +235,7 @@ mostCommonNeighbour list word =
     EXAMPLES:
         getMostCommonWord ("bear",2) [("bear",2),("dog",1)] == ("bear",2)
         getMostCommonWord ("bear",2) [("bear",2),("dog",1),("fish",2)] == ("fish",2)
+        getMostCommonWord ("fish",2) [] == ("fish",2)
 -}
 getMostCommonWord :: (String, Int) -> WordTally -> (String, Int)
 -- VARIANT: length list

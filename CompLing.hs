@@ -152,12 +152,8 @@ finalPairsAux list = [(last (init list), last list)]
 -}
 pairsCount :: Pairs -> PairsTally
 -- VARIANT: length list
-pairsCount list
-    | null list = []
-    | otherwise =
-        getPairTally pair list ++ pairsCount (makeNewList pair list)
-            where 
-                pair = head list
+pairsCount [] = []
+pairsCount (x:xs) = getPairTally x xs ++ pairsCount (makeNewList x xs)
 
 {-  getPairTally pair listOfPairs
     Calculates how many times a specified pair appears in a list regardless of order of elements in pair.
@@ -169,7 +165,7 @@ pairsCount list
         getPairTally ("a", "b") [] == [(("a","b"),0)]
 -}
 getPairTally :: (String, String) -> Pairs -> PairsTally
-getPairTally pair list = [(pair, length [ (a,b) | (a,b) <- list, (a,b) == pair || (b,a) == pair] )]
+getPairTally pair list = [(pair, 1 + length [ (a,b) | (a,b) <- list, (a,b) == pair || (b,a) == pair] )]
 
 {-  makeNewList pair listOfPairs
     Removes all instances of a specified pair from a list, regardless of order of elements in the pair.
@@ -181,8 +177,7 @@ getPairTally pair list = [(pair, length [ (a,b) | (a,b) <- list, (a,b) == pair |
             == [("big","bear"),("bear","big"),("big","dog")]      
 -}
 makeNewList :: (String, String) -> Pairs -> Pairs
-makeNewList pair list = [ (a, b) | (a,b) <- list, not ((a,b) == pair || (b,a) == pair) ]
-
+makeNewList (a,b) list = filter (/=(a,b)) $ filter (/=(b,a)) list
 
 
 

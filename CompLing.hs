@@ -1,3 +1,7 @@
+-- Av Simon Lalloo och Anthony Melinder
+
+
+
 -- DO NOT MODIFY THE FOLLOWING LINE
 module CompLing(wordCount, adjacentPairs, pairsCount, neighbours, mostCommonNeighbour) where
 
